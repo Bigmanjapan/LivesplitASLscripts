@@ -16,6 +16,7 @@ init
 	vars.time = 0;
 	var savemenuActive = 0;
 	vars.CGIcutsceneActive = 0;
+	vars.charaPositionX = 0; 
 }
 
 update
@@ -48,7 +49,20 @@ update
 	
 	if (old.savemenuActive == 1036831949 && current.savemenuActive != 1036831949 && vars.time == 0) {
 		vars.timerModel.Reset();
-	}    	
+	}
+
+	switch ((byte)current.gameVersion) {
+		case 239:
+			vars.charaPositionX = memory.ReadValue<float>((IntPtr)0x206B90F8); // SLES-53411
+			break;
+		case 46:
+			vars.charaPositionX = memory.ReadValue<int>((IntPtr)0x206B2C78); // SLUS-21007
+			break;
+		case 214:
+			vars.charaPositionX = memory.ReadValue<int>((IntPtr)0x206AF478); // SLPS-25329
+			break;
+	}
+    	
 }
 
 start
@@ -58,7 +72,7 @@ start
 
 split
 {
-	if (vars.CGIcutsceneActive == 1 && vars.time != 0) {
+	if (vars.CGIcutsceneActive == 1 && vars.time != 0 && vars.charaPositionX <= -42) {
 		return true; 
 	}    
 }
